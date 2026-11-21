@@ -1,0 +1,15 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Editör ve işletim sistemi
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code dosyaları
+.claude/
+claude.md
+CLAUDE.md
