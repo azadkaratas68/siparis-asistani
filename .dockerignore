@@ -1,0 +1,7 @@
+# Önce her şeyi dışarıda bırak, sonra yalnızca gerekenleri içeri al.
+*
+!index.html
+!style.css
+!package.json
+!js/
+!tests/
