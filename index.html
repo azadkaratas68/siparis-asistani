@@ -27,10 +27,48 @@
         </div>
         <button type="button" id="sepeti-temizle" class="btn btn-ikincil">Sepeti temizle</button>
       </div>
+
+      <form id="siparis-formu" class="siparis-formu" novalidate>
+        <h3>Müşteri bilgileri</h3>
+        <label>
+          <span>Ad soyad <span class="zorunlu" aria-hidden="true">*</span></span>
+          <input type="text" name="ad" autocomplete="off" required>
+        </label>
+        <label>
+          <span>Telefon <span class="zorunlu" aria-hidden="true">*</span></span>
+          <input type="tel" name="telefon" autocomplete="off" placeholder="0532 123 45 67" required>
+        </label>
+        <label>
+          Adres
+          <input type="text" name="adres" autocomplete="off">
+        </label>
+        <label>
+          Not
+          <textarea name="not" rows="2" placeholder="Örn. acısız olsun, zil çalışmıyor"></textarea>
+        </label>
+        <button type="submit" class="btn btn-ana">Siparişi kaydet</button>
+        <p id="form-mesaji" class="form-mesaji" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="siparisler-baslik">
+      <h2 id="siparisler-baslik">Bugünkü siparişler</h2>
+      <div class="ozet">
+        <div class="ozet-kutu">
+          <span class="ozet-etiket">Sipariş sayısı</span>
+          <strong id="siparis-sayisi">0</strong>
+        </div>
+        <div class="ozet-kutu">
+          <span class="ozet-etiket">Ciro</span>
+          <strong id="gunluk-ciro">0 ₺</strong>
+        </div>
+      </div>
+      <ul id="siparis-listesi" class="siparis-listesi"></ul>
     </section>
   </main>
 
   <script src="js/cart.js"></script>
+  <script src="js/orders.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

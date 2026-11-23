@@ -192,3 +192,156 @@ body {
 .toplam-satiri strong {
   font-variant-numeric: tabular-nums;
 }
+
+/* Müşteri formu */
+
+.btn-ana {
+  background: var(--vurgu);
+  color: #fff;
+  padding: 10px 14px;
+  font-weight: 600;
+}
+
+.btn-ana:hover {
+  background: var(--vurgu-koyu);
+}
+
+.siparis-formu {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 2px solid var(--cizgi);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.siparis-formu h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.siparis-formu label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--soluk);
+}
+
+.siparis-formu input,
+.siparis-formu textarea {
+  font: inherit;
+  color: var(--metin);
+  padding: 8px 10px;
+  border: 1px solid var(--cizgi);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.siparis-formu input:focus,
+.siparis-formu textarea:focus {
+  outline: 2px solid var(--vurgu);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.zorunlu {
+  color: var(--vurgu);
+}
+
+.form-mesaji {
+  margin: 0;
+  min-height: 1.4em;
+  font-weight: 600;
+}
+
+.mesaj-basari {
+  color: var(--basari);
+}
+
+.mesaj-hata {
+  color: var(--hata);
+}
+
+/* Bugünkü siparişler */
+
+.ozet {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ozet-kutu {
+  background: var(--zemin);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ozet-etiket {
+  font-size: 0.8rem;
+  color: var(--soluk);
+}
+
+.ozet-kutu strong {
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.siparis-listesi {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.siparis {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--cizgi);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.siparis-ust {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.siparis-saat {
+  color: var(--soluk);
+  font-variant-numeric: tabular-nums;
+}
+
+.siparis-ad {
+  flex: 1;
+}
+
+.siparis-tutar {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.siparis-detay,
+.siparis-urunler {
+  font-size: 0.9rem;
+}
+
+.siparis-detay {
+  color: var(--soluk);
+}
+
+.siparis-not {
+  font-size: 0.9rem;
+  background: #fff8e1;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.liste-bos {
+  padding: 16px 0;
+  color: var(--soluk);
+  text-align: center;
+}
