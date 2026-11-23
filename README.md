@@ -38,7 +38,7 @@ Pano "Yapılacak / Devam Ediyor / Tamamlandı" sütunlarından oluşur. Her gör
 |---|-------|-------|
 | [#1](https://github.com/azadkaratas68/siparis-asistani/issues/1) | Menü ve sepet | ✅ Tamamlandı |
 | [#2](https://github.com/azadkaratas68/siparis-asistani/issues/2) | Sipariş kaydetme ve günlük liste | ✅ Tamamlandı |
-| [#3](https://github.com/azadkaratas68/siparis-asistani/issues/3) | İndirim / kampanya kodu | Yapılacak |
+| [#3](https://github.com/azadkaratas68/siparis-asistani/issues/3) | İndirim / kampanya kodu | ✅ Tamamlandı |
 | [#4](https://github.com/azadkaratas68/siparis-asistani/issues/4) | Sipariş fişi yazdırma | Yapılacak |
 | [#5](https://github.com/azadkaratas68/siparis-asistani/issues/5) | GitHub Actions ile otomatik test (CI) | ✅ Tamamlandı |
 | [#6](https://github.com/azadkaratas68/siparis-asistani/issues/6) | Menüyü JSON dosyasından okuma | Yapılacak |
@@ -92,7 +92,7 @@ Testler için **Node.js 18 veya üstü** gerekir. Ek paket kurulmaz, Node'un dah
 npm test
 ```
 
-Beklenen çıktı: 18 testin tamamı geçer (`pass 18`, `fail 0`).
+Beklenen çıktı: 27 testin tamamı geçer (`pass 27`, `fail 0`).
 
 ## Özellikleri deneme
 
@@ -116,6 +116,15 @@ Beklenen çıktı: 18 testin tamamı geçer (`pass 18`, `fail 0`).
    - sepet ve form sıfırlanır.
 5. Sayfayı yenileyin (F5). Siparişler ve özet olduğu gibi durur.
 
+### #3 – İndirim / kampanya kodu
+
+1. Sepete 2 × Margarita + 1 × Ayran ekleyin (530 ₺).
+2. Kampanya kodu alanına `XYZ` yazıp **Uygula**'ya basın. Kırmızı renkte "Geçersiz kampanya kodu." uyarısı çıkar, toplam değişmez.
+3. `PIZZA10` yazıp **Uygula**'ya basın. Ara toplam **530 ₺**, indirim **−53 ₺**, toplam **477 ₺** görünür. Kod büyük/küçük harf fark etmeksizin kabul edilir (`pizza10`, `PİZZA10`).
+4. Sepetteki ürünleri değiştirin. İndirim yeni toplama göre yeniden hesaplanır.
+5. Müşteri bilgilerini girip siparişi kaydedin. Kaydedilen tutar ve ciro indirimli tutardır; listede indirim satırı görünür.
+6. **Kaldır** butonu kodu iptal eder; **Sepeti temizle** ve başarılı kayıt da kodu sıfırlar.
+
 ## Proje yapısı
 
 ```
@@ -129,11 +138,13 @@ siparis-asistani/
 │   └── ci.yml          GitHub Actions: testler + Docker imajı kontrolü
 ├── js/
 │   ├── cart.js         Menü verisi ve sepet mantığı (saf fonksiyonlar)
+│   ├── discount.js     Kampanya kodları ve indirim hesabı (saf fonksiyonlar)
 │   ├── orders.js       Sipariş oluşturma, doğrulama, günlük özet (saf fonksiyonlar)
 │   └── app.js          Ekrana çizme, buton/form olayları, localStorage
 └── tests/
-    ├── cart.test.js    Sepet testleri
-    └── orders.test.js  Sipariş testleri
+    ├── cart.test.js      Sepet testleri
+    ├── discount.test.js  İndirim testleri
+    └── orders.test.js    Sipariş testleri
 ```
 
-Hesaplama ve doğrulama mantığı `cart.js` ve `orders.js` içinde, sayfaya (DOM) dokunmayan saf fonksiyonlar olarak durur. Bu sayede aynı kod hem tarayıcıda çalışır hem de Node'da test edilir. `app.js` yalnızca ekrana çizer ve olayları bağlar. Kullanıcının yazdığı metinler sayfaya `textContent` ile basıldığı için HTML olarak çalıştırılamaz.
+Hesaplama ve doğrulama mantığı `cart.js`, `discount.js` ve `orders.js` içinde, sayfaya (DOM) dokunmayan saf fonksiyonlar olarak durur. Bu sayede aynı kod hem tarayıcıda çalışır hem de Node'da test edilir. `app.js` yalnızca ekrana çizer ve olayları bağlar. Kullanıcının yazdığı metinler sayfaya `textContent` ile basıldığı için HTML olarak çalıştırılamaz.

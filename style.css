@@ -15,6 +15,20 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
+/* Ekranda görünmez, ekran okuyucu okur. */
+.gorunmez {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -191,6 +205,48 @@ body {
 
 .toplam-satiri strong {
   font-variant-numeric: tabular-nums;
+}
+
+/* Kampanya kodu */
+
+.tutar-satiri {
+  display: flex;
+  justify-content: space-between;
+  color: var(--soluk);
+  font-variant-numeric: tabular-nums;
+}
+
+.indirim-satiri {
+  color: var(--basari);
+}
+
+.kampanya-formu {
+  display: flex;
+  gap: 8px;
+}
+
+.kampanya-formu input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 6px 10px;
+  border: 1px solid var(--cizgi);
+  border-radius: 8px;
+}
+
+.kampanya-formu input:focus {
+  outline: 2px solid var(--vurgu);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.sepet-alt .form-mesaji:empty {
+  display: none;
+}
+
+.siparis-indirim {
+  font-size: 0.9rem;
+  color: var(--basari);
 }
 
 /* Müşteri formu */

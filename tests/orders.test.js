@@ -70,6 +70,30 @@ test("telefon 123 iken sipariş oluşturulamaz", () => {
   });
 });
 
+test("kodsuz siparişte indirim yoktur", () => {
+  const siparis = siparisOlustur({ p1: 2, i1: 1 }, gecerliMusteri);
+  assert.equal(siparis.araToplam, 530);
+  assert.equal(siparis.kampanyaKodu, null);
+  assert.equal(siparis.indirim, 0);
+  assert.equal(siparis.toplam, 530);
+});
+
+test("PIZZA10 ile kaydedilen siparişin toplamı ve ciroya yansıyan tutar indirimlidir", () => {
+  const siparis = siparisOlustur({ p1: 2, i1: 1 }, gecerliMusteri, new Date(), undefined, "pizza10");
+  assert.equal(siparis.araToplam, 530);
+  assert.equal(siparis.kampanyaKodu, "PIZZA10");
+  assert.equal(siparis.indirim, 53);
+  assert.equal(siparis.toplam, 477);
+  assert.equal(gunlukCiro([siparis]), 477);
+});
+
+test("geçersiz kampanya koduyla sipariş oluşturulamaz", () => {
+  assert.throws(
+    () => siparisOlustur({ p1: 1 }, gecerliMusteri, new Date(), undefined, "YANLIS"),
+    { message: "Geçersiz kampanya kodu." }
+  );
+});
+
 test("günün siparişleri ve ciro yalnızca o günü kapsar", () => {
   const sepet = { p1: 1 }; // 250 ₺
   const dun = siparisOlustur(sepet, gecerliMusteri, new Date(2026, 10, 22, 23, 59));

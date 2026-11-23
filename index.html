@@ -21,10 +21,27 @@
       <h2 id="sepet-baslik">Sepet</h2>
       <ul id="sepet-listesi" class="sepet-listesi"></ul>
       <div class="sepet-alt">
+        <div id="ara-toplam-satiri" class="tutar-satiri" hidden>
+          <span>Ara toplam</span>
+          <span id="ara-toplam">0 ₺</span>
+        </div>
+        <div id="indirim-satiri" class="tutar-satiri indirim-satiri" hidden>
+          <span id="indirim-etiketi">İndirim</span>
+          <span id="indirim-tutari">0 ₺</span>
+        </div>
         <div class="toplam-satiri">
           <span>Toplam</span>
           <strong id="sepet-toplam" aria-live="polite">0 ₺</strong>
         </div>
+
+        <form id="kampanya-formu" class="kampanya-formu" novalidate>
+          <label for="kampanya-kodu" class="gorunmez">Kampanya kodu</label>
+          <input type="text" id="kampanya-kodu" name="kod" placeholder="Kampanya kodu" autocomplete="off">
+          <button type="submit" class="btn btn-ikincil">Uygula</button>
+          <button type="button" id="kampanya-kaldir" class="btn btn-ikincil" hidden>Kaldır</button>
+        </form>
+        <p id="kampanya-mesaji" class="form-mesaji" role="status" aria-live="polite"></p>
+
         <button type="button" id="sepeti-temizle" class="btn btn-ikincil">Sepeti temizle</button>
       </div>
 
@@ -68,6 +85,7 @@
   </main>
 
   <script src="js/cart.js"></script>
+  <script src="js/discount.js"></script>
   <script src="js/orders.js"></script>
   <script src="js/app.js"></script>
 </body>

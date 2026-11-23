@@ -7,6 +7,8 @@ const Sepet =
   typeof module !== "undefined"
     ? require("./cart.js")
     : { MENU, sepetKalemleri, sepetToplami, sepetBosMu };
+const Kampanya =
+  typeof module !== "undefined" ? require("./discount.js") : { indirimHesapla };
 
 // Boşluk, tire, parantez gibi karakterler atıldıktan sonra 10 veya 11 hane olmalı.
 // 532 123 45 67 → 10 hane, 0532 123 45 67 → 11 hane.
@@ -16,7 +18,8 @@ function telefonGecerliMi(telefon) {
 }
 
 // musteri: { ad, telefon, adres, not }
-function siparisOlustur(sepet, musteri, tarih = new Date(), menu = Sepet.MENU) {
+// kampanyaKodu boş bırakılırsa indirim uygulanmaz; geçersizse hata fırlatılır.
+function siparisOlustur(sepet, musteri, tarih = new Date(), menu = Sepet.MENU, kampanyaKodu = "") {
   const kalemler = Sepet.sepetKalemleri(sepet, menu);
   if (kalemler.length === 0) {
     throw new Error("Sepet boş, sipariş oluşturulamaz.");
@@ -31,6 +34,11 @@ function siparisOlustur(sepet, musteri, tarih = new Date(), menu = Sepet.MENU) {
     throw new Error("Telefon numarası 10 veya 11 haneli olmalıdır.");
   }
 
+  const araToplam = Sepet.sepetToplami(sepet, menu);
+  const kampanya = String(kampanyaKodu || "").trim()
+    ? Kampanya.indirimHesapla(araToplam, kampanyaKodu)
+    : null;
+
   return {
     id: tarih.getTime().toString(36) + "-" + Math.random().toString(36).slice(2, 7),
     tarih: tarih.toISOString(),
@@ -41,7 +49,10 @@ function siparisOlustur(sepet, musteri, tarih = new Date(), menu = Sepet.MENU) {
     },
     not: String(musteri.not || "").trim(),
     kalemler: kalemler,
-    toplam: Sepet.sepetToplami(sepet, menu),
+    araToplam: araToplam,
+    kampanyaKodu: kampanya ? kampanya.kod : null,
+    indirim: kampanya ? kampanya.indirim : 0,
+    toplam: kampanya ? kampanya.toplam : araToplam,
   };
 }
 

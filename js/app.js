@@ -1,15 +1,25 @@
 // Arayüz katmanı: menüyü, sepeti ve siparişleri ekrana çizer, olayları bağlar,
 // siparişleri localStorage'da saklar.
-// Hesaplama ve doğrulama cart.js ve orders.js içindeki saf fonksiyonlarda yapılır.
+// Hesaplama ve doğrulama cart.js, discount.js ve orders.js içindeki saf fonksiyonlarda yapılır.
 
 const SIPARIS_ANAHTARI = "siparis_asistani_siparisler";
 
 let sepet = {};
+let kampanyaKodu = ""; // Uygulanmış geçerli kod; yoksa boş.
 let siparisler = siparisleriOku();
 
 const menuAlani = document.getElementById("menu");
 const sepetListesi = document.getElementById("sepet-listesi");
+const araToplamSatiri = document.getElementById("ara-toplam-satiri");
+const araToplamAlani = document.getElementById("ara-toplam");
+const indirimSatiri = document.getElementById("indirim-satiri");
+const indirimEtiketi = document.getElementById("indirim-etiketi");
+const indirimTutari = document.getElementById("indirim-tutari");
 const sepetToplamAlani = document.getElementById("sepet-toplam");
+const kampanyaFormu = document.getElementById("kampanya-formu");
+const kampanyaKutusu = document.getElementById("kampanya-kodu");
+const kampanyaKaldirButonu = document.getElementById("kampanya-kaldir");
+const kampanyaMesaji = document.getElementById("kampanya-mesaji");
 const temizleButonu = document.getElementById("sepeti-temizle");
 const siparisFormu = document.getElementById("siparis-formu");
 const formMesaji = document.getElementById("form-mesaji");
@@ -102,7 +112,19 @@ function sepetiCiz() {
     }
   }
 
-  sepetToplamAlani.textContent = paraBicimle(sepetToplami(sepet));
+  const araToplam = sepetToplami(sepet);
+  const kampanya = kampanyaKodu ? indirimHesapla(araToplam, kampanyaKodu) : null;
+
+  araToplamSatiri.hidden = !kampanya;
+  indirimSatiri.hidden = !kampanya;
+  kampanyaKaldirButonu.hidden = !kampanya;
+  if (kampanya) {
+    araToplamAlani.textContent = paraBicimle(araToplam);
+    indirimEtiketi.textContent = "İndirim (" + kampanya.kod + ", %" + kampanya.oran + ")";
+    indirimTutari.textContent = "−" + paraBicimle(kampanya.indirim);
+  }
+
+  sepetToplamAlani.textContent = paraBicimle(kampanya ? kampanya.toplam : araToplam);
   temizleButonu.disabled = sepetBosMu(sepet);
 }
 
@@ -140,6 +162,10 @@ function siparisleriCiz() {
       elemanOlustur("div", "siparis-detay", iletisim),
       elemanOlustur("div", "siparis-urunler", urunler)
     );
+    if (siparis.indirim > 0) {
+      const metin = "İndirim (" + siparis.kampanyaKodu + "): −" + paraBicimle(siparis.indirim);
+      satir.append(elemanOlustur("div", "siparis-indirim", metin));
+    }
     if (siparis.not) {
       satir.append(elemanOlustur("div", "siparis-not", "Not: " + siparis.not));
     }
@@ -147,12 +173,32 @@ function siparisleriCiz() {
   }
 }
 
-function mesajGoster(metin, tur) {
-  formMesaji.textContent = metin;
-  formMesaji.className = "form-mesaji " + (tur === "basari" ? "mesaj-basari" : "mesaj-hata");
+// tur: "basari", "hata" veya boş (mesajı temizler)
+function mesajGoster(eleman, metin, tur) {
+  eleman.textContent = metin;
+  eleman.className = "form-mesaji" + (tur ? " mesaj-" + tur : "");
 }
 
 // --- Olaylar ---
+
+function kampanyaUygula(olay) {
+  olay.preventDefault();
+  try {
+    const sonuc = indirimHesapla(sepetToplami(sepet), kampanyaKutusu.value);
+    kampanyaKodu = sonuc.kod;
+    kampanyaKutusu.value = sonuc.kod;
+    mesajGoster(kampanyaMesaji, sonuc.kod + " uygulandı: %" + sonuc.oran + " indirim.", "basari");
+  } catch (hata) {
+    mesajGoster(kampanyaMesaji, hata.message, "hata");
+  }
+  sepetiCiz();
+}
+
+function kampanyayiSifirla() {
+  kampanyaKodu = "";
+  kampanyaKutusu.value = "";
+  mesajGoster(kampanyaMesaji, "");
+}
 
 function siparisiKaydet(olay) {
   olay.preventDefault();
@@ -166,24 +212,25 @@ function siparisiKaydet(olay) {
 
   let siparis;
   try {
-    siparis = siparisOlustur(sepet, musteri);
+    siparis = siparisOlustur(sepet, musteri, new Date(), MENU, kampanyaKodu);
   } catch (hata) {
-    mesajGoster(hata.message, "hata");
+    mesajGoster(formMesaji, hata.message, "hata");
     return;
   }
 
   const yeniListe = [...siparisler, siparis];
   if (!siparisleriYaz(yeniListe)) {
-    mesajGoster("Sipariş kaydedilemedi: tarayıcı depolamasına yazılamıyor.", "hata");
+    mesajGoster(formMesaji, "Sipariş kaydedilemedi: tarayıcı depolamasına yazılamıyor.", "hata");
     return;
   }
 
   siparisler = yeniListe;
   sepet = {};
+  kampanyayiSifirla();
   siparisFormu.reset();
   sepetiCiz();
   siparisleriCiz();
-  mesajGoster("Sipariş kaydedildi: " + paraBicimle(siparis.toplam), "basari");
+  mesajGoster(formMesaji, "Sipariş kaydedildi: " + paraBicimle(siparis.toplam), "basari");
 }
 
 // Menüdeki "Ekle" ve sepetteki −/+ butonları aynı işleyiciyi kullanır.
@@ -201,8 +248,14 @@ function sepetButonunaTiklandi(olay) {
 
 menuAlani.addEventListener("click", sepetButonunaTiklandi);
 sepetListesi.addEventListener("click", sepetButonunaTiklandi);
+kampanyaFormu.addEventListener("submit", kampanyaUygula);
+kampanyaKaldirButonu.addEventListener("click", () => {
+  kampanyayiSifirla();
+  sepetiCiz();
+});
 temizleButonu.addEventListener("click", () => {
   sepet = {};
+  kampanyayiSifirla();
   sepetiCiz();
 });
 siparisFormu.addEventListener("submit", siparisiKaydet);
