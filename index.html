@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sipariş Asistanı</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="ust-bant">
+    <h1>Pizza Dükkânı Sipariş Asistanı</h1>
+  </header>
+
+  <main class="paneller">
+    <section class="panel" aria-labelledby="menu-baslik">
+      <h2 id="menu-baslik">Menü</h2>
+      <div id="menu"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="sepet-baslik">
+      <h2 id="sepet-baslik">Sepet</h2>
+      <ul id="sepet-listesi" class="sepet-listesi"></ul>
+      <div class="sepet-alt">
+        <div class="toplam-satiri">
+          <span>Toplam</span>
+          <strong id="sepet-toplam" aria-live="polite">0 ₺</strong>
+        </div>
+        <button type="button" id="sepeti-temizle" class="btn btn-ikincil">Sepeti temizle</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/cart.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
