@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Testler (npm test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+
+  docker:
+    name: Docker imajı
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: İmajı derle (testler imaj içinde de çalışır)
+        run: docker build -t siparis-asistani .
+
+      - name: Konteyneri başlat
+        run: docker run -d --name siparis -p 8080:80 siparis-asistani
+
+      - name: Sayfanın sunulduğunu kontrol et
+        run: |
+          for i in $(seq 1 10); do
+            curl -fsS http://localhost:8080/ > sayfa.html && break
+            sleep 1
+          done
+          grep -q "Sipariş Asistanı" sayfa.html
+          for dosya in style.css js/cart.js js/orders.js js/app.js; do
+            curl -fsS -o /dev/null "http://localhost:8080/$dosya"
+          done
+
+      - name: Konteyner kayıtları
+        if: always()
+        run: docker logs siparis || true

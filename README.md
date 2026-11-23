@@ -1,5 +1,7 @@
 # Pizza Dükkânı Sipariş Asistanı
 
+[![CI](https://github.com/azadkaratas68/siparis-asistani/actions/workflows/ci.yml/badge.svg)](https://github.com/azadkaratas68/siparis-asistani/actions/workflows/ci.yml)
+
 > MTH001 – Güncel Yazılım Geliştirme Süreçleri ve DevOps dersi bireysel projesi.
 
 Pizza dükkânında sipariş alan çalışanlar için tarayıcıda açılan, tek ekranlık bir sipariş asistanı. Kurulum veya sunucu gerekmez.
@@ -38,8 +40,9 @@ Pano "Yapılacak / Devam Ediyor / Tamamlandı" sütunlarından oluşur. Her gör
 | [#2](https://github.com/azadkaratas68/siparis-asistani/issues/2) | Sipariş kaydetme ve günlük liste | ✅ Tamamlandı |
 | [#3](https://github.com/azadkaratas68/siparis-asistani/issues/3) | İndirim / kampanya kodu | Yapılacak |
 | [#4](https://github.com/azadkaratas68/siparis-asistani/issues/4) | Sipariş fişi yazdırma | Yapılacak |
-| [#5](https://github.com/azadkaratas68/siparis-asistani/issues/5) | GitHub Actions ile otomatik test (CI) | Yapılacak |
+| [#5](https://github.com/azadkaratas68/siparis-asistani/issues/5) | GitHub Actions ile otomatik test (CI) | ✅ Tamamlandı |
 | [#6](https://github.com/azadkaratas68/siparis-asistani/issues/6) | Menüyü JSON dosyasından okuma | Yapılacak |
+| [#7](https://github.com/azadkaratas68/siparis-asistani/issues/7) | Docker ile çalıştırma | ✅ Tamamlandı |
 
 Geliştirilen iki görevin her biri ayrı bir commit'tir ve commit mesajındaki `(#1)` / `(#2)` ile ilgili issue'ya bağlıdır.
 
@@ -53,6 +56,33 @@ Geliştirilen iki görevin her biri ayrı bir commit'tir ve commit mesajındaki 
    ```
 
 2. `index.html` dosyasına çift tıklayarak tarayıcıda açın. Sunucu, kurulum veya internet bağlantısı gerekmez.
+
+### Docker ile çalıştırma
+
+Bilgisayarda yalnızca [Docker Desktop](https://www.docker.com/products/docker-desktop/) kurulu olması yeterlidir; Node.js gerekmez.
+
+```powershell
+docker compose up --build -d
+```
+
+Ardından tarayıcıda **http://localhost:8080** adresini açın. Durdurmak için:
+
+```powershell
+docker compose down
+```
+
+İmaj iki aşamada oluşturulur: önce Node imajında testler çalışır, testler geçerse uygulama dosyaları küçük bir nginx imajına kopyalanıp sunulur. Testlerden biri kırılırsa imaj oluşmaz.
+
+> Not: Siparişler tarayıcının `localStorage` alanında tutulduğu için `http://localhost:8080` ile `index.html`'e çift tıklayarak açılan sayfa birbirinin siparişlerini görmez.
+
+### Sürekli entegrasyon (CI)
+
+`.github/workflows/ci.yml` her push ve pull request'te GitHub Actions üzerinde iki iş çalıştırır:
+
+1. **Testler:** `npm test` (Node 22).
+2. **Docker imajı:** imaj derlenir, konteyner başlatılır ve sayfa ile JS/CSS dosyalarının sunulduğu kontrol edilir.
+
+Sonuçlar deponun **Actions** sekmesinde ve README'nin başındaki rozette görünür.
 
 ### Testleri çalıştırma
 
@@ -93,6 +123,10 @@ siparis-asistani/
 ├── index.html          Arayüz: Menü | Sepet + müşteri formu | Bugünkü siparişler
 ├── style.css           Stiller
 ├── package.json        Sadece "test" script'i, bağımlılık yok
+├── Dockerfile          Test + nginx ile sunum (iki aşamalı)
+├── compose.yaml        docker compose ile tek komutla çalıştırma
+├── .github/workflows/
+│   └── ci.yml          GitHub Actions: testler + Docker imajı kontrolü
 ├── js/
 │   ├── cart.js         Menü verisi ve sepet mantığı (saf fonksiyonlar)
 │   ├── orders.js       Sipariş oluşturma, doğrulama, günlük özet (saf fonksiyonlar)
