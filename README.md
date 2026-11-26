@@ -39,7 +39,7 @@ Pano "Yapılacak / Devam Ediyor / Tamamlandı" sütunlarından oluşur. Her gör
 | [#1](https://github.com/azadkaratas68/siparis-asistani/issues/1) | Menü ve sepet | ✅ Tamamlandı |
 | [#2](https://github.com/azadkaratas68/siparis-asistani/issues/2) | Sipariş kaydetme ve günlük liste | ✅ Tamamlandı |
 | [#3](https://github.com/azadkaratas68/siparis-asistani/issues/3) | İndirim / kampanya kodu | ✅ Tamamlandı |
-| [#4](https://github.com/azadkaratas68/siparis-asistani/issues/4) | Sipariş fişi yazdırma | Yapılacak |
+| [#4](https://github.com/azadkaratas68/siparis-asistani/issues/4) | Sipariş fişi yazdırma | ✅ Tamamlandı |
 | [#5](https://github.com/azadkaratas68/siparis-asistani/issues/5) | GitHub Actions ile otomatik test (CI) | ✅ Tamamlandı |
 | [#6](https://github.com/azadkaratas68/siparis-asistani/issues/6) | Menüyü JSON dosyasından okuma | Yapılacak |
 | [#7](https://github.com/azadkaratas68/siparis-asistani/issues/7) | Docker ile çalıştırma | ✅ Tamamlandı |
@@ -92,7 +92,7 @@ Testler için **Node.js 18 veya üstü** gerekir. Ek paket kurulmaz, Node'un dah
 npm test
 ```
 
-Beklenen çıktı: 27 testin tamamı geçer (`pass 27`, `fail 0`).
+Beklenen çıktı: 33 testin tamamı geçer (`pass 33`, `fail 0`).
 
 ## Özellikleri deneme
 
@@ -125,6 +125,12 @@ Beklenen çıktı: 27 testin tamamı geçer (`pass 27`, `fail 0`).
 5. Müşteri bilgilerini girip siparişi kaydedin. Kaydedilen tutar ve ciro indirimli tutardır; listede indirim satırı görünür.
 6. **Kaldır** butonu kodu iptal eder; **Sepeti temizle** ve başarılı kayıt da kodu sıfırlar.
 
+### #4 – Sipariş fişi yazdırma
+
+1. Bir sipariş kaydedin (ör. 2 × Margarita + 1 × Ayran = 530 ₺, isteğe bağlı `PIZZA10` ile 477 ₺).
+2. "Bugünkü siparişler" listesindeki sipariş kartında **Fiş yazdır** butonuna basın.
+3. Tarayıcının yazdırma önizlemesi açılır; yalnızca fiş görünür ve fişte dükkân başlığı, sipariş/müşteri bilgileri, ürünler, adetler, varsa indirim ve genel toplam yer alır.
+
 ## Proje yapısı
 
 ```
@@ -140,11 +146,13 @@ siparis-asistani/
 │   ├── cart.js         Menü verisi ve sepet mantığı (saf fonksiyonlar)
 │   ├── discount.js     Kampanya kodları ve indirim hesabı (saf fonksiyonlar)
 │   ├── orders.js       Sipariş oluşturma, doğrulama, günlük özet (saf fonksiyonlar)
+│   ├── receipt.js      Sipariş fişi verisi ve metni (saf fonksiyonlar)
 │   └── app.js          Ekrana çizme, buton/form olayları, localStorage
 └── tests/
     ├── cart.test.js      Sepet testleri
     ├── discount.test.js  İndirim testleri
-    └── orders.test.js    Sipariş testleri
+    ├── orders.test.js    Sipariş testleri
+    └── receipt.test.js   Fiş yazdırma testleri
 ```
 
-Hesaplama ve doğrulama mantığı `cart.js`, `discount.js` ve `orders.js` içinde, sayfaya (DOM) dokunmayan saf fonksiyonlar olarak durur. Bu sayede aynı kod hem tarayıcıda çalışır hem de Node'da test edilir. `app.js` yalnızca ekrana çizer ve olayları bağlar. Kullanıcının yazdığı metinler sayfaya `textContent` ile basıldığı için HTML olarak çalıştırılamaz.
+Hesaplama ve doğrulama mantığı `cart.js`, `discount.js`, `orders.js` ve `receipt.js` içinde, sayfaya (DOM) dokunmayan saf fonksiyonlar olarak durur. Bu sayede aynı kod hem tarayıcıda çalışır hem de Node'da test edilir. `app.js` yalnızca ekrana çizer ve olayları bağlar. Kullanıcının yazdığı metinler sayfaya `textContent` ile basıldığı için HTML olarak çalıştırılamaz.

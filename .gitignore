@@ -5,6 +5,7 @@ npm-debug.log*
 # Editör ve işletim sistemi
 .vscode/
 .idea/
+.gemini/
 .DS_Store
 Thumbs.db
 desktop.ini

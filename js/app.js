@@ -26,6 +26,7 @@ const formMesaji = document.getElementById("form-mesaji");
 const siparisSayisiAlani = document.getElementById("siparis-sayisi");
 const gunlukCiroAlani = document.getElementById("gunluk-ciro");
 const siparisListesi = document.getElementById("siparis-listesi");
+const fisAlani = document.getElementById("fis-alani");
 
 // --- localStorage ---
 
@@ -169,8 +170,76 @@ function siparisleriCiz() {
     if (siparis.not) {
       satir.append(elemanOlustur("div", "siparis-not", "Not: " + siparis.not));
     }
+
+    const alt = elemanOlustur("div", "siparis-alt");
+    alt.append(
+      butonOlustur(
+        "Fiş yazdır",
+        "btn btn-ikincil btn-kucuk",
+        { islem: "yazdir", id: siparis.id },
+        siparis.musteri.ad + " sipariş fişini yazdır"
+      )
+    );
+    satir.append(alt);
     siparisListesi.append(satir);
   }
+}
+
+function fisiCiz(siparis) {
+  const veri = fisVerisiHazirla(siparis);
+  fisAlani.replaceChildren();
+
+  fisAlani.append(elemanOlustur("h2", "fis-baslik", veri.baslik));
+
+  const meta = elemanOlustur("div", "fis-meta");
+  if (veri.siparisId) meta.append(elemanOlustur("div", "", "Sipariş No: " + veri.siparisId));
+  if (veri.tarih) meta.append(elemanOlustur("div", "", "Tarih: " + veri.tarih));
+  if (meta.childElementCount > 0) fisAlani.append(meta);
+
+  const musteriBolumu = elemanOlustur("div", "fis-musteri");
+  if (veri.musteri.ad) musteriBolumu.append(elemanOlustur("div", "", "Müşteri: " + veri.musteri.ad));
+  if (veri.musteri.telefon) musteriBolumu.append(elemanOlustur("div", "", "Telefon: " + veri.musteri.telefon));
+  if (veri.musteri.adres) musteriBolumu.append(elemanOlustur("div", "", "Adres: " + veri.musteri.adres));
+  if (veri.not) musteriBolumu.append(elemanOlustur("div", "", "Not: " + veri.not));
+  if (musteriBolumu.childElementCount > 0) fisAlani.append(musteriBolumu);
+
+  const kalemListesi = elemanOlustur("ul", "fis-kalemler");
+  for (const kalem of veri.kalemler) {
+    const satir = elemanOlustur("li", "fis-kalem");
+    satir.append(
+      elemanOlustur("span", "fis-kalem-ad", kalem.adet + "x " + kalem.ad),
+      elemanOlustur("span", "fis-kalem-tutar", paraBicimle(kalem.tutar))
+    );
+    kalemListesi.append(satir);
+  }
+  fisAlani.append(kalemListesi);
+
+  const ozet = elemanOlustur("div", "fis-ozet");
+  if (veri.indirim > 0) {
+    const araSatir = elemanOlustur("div", "fis-satir");
+    araSatir.append(
+      elemanOlustur("span", "", "Ara toplam"),
+      elemanOlustur("span", "", paraBicimle(veri.araToplam))
+    );
+    ozet.append(araSatir);
+
+    const indirimEtiketi = veri.kampanyaKodu ? "İndirim (" + veri.kampanyaKodu + ")" : "İndirim";
+    const indirimSatir = elemanOlustur("div", "fis-satir");
+    indirimSatir.append(
+      elemanOlustur("span", "", indirimEtiketi),
+      elemanOlustur("span", "", "−" + paraBicimle(veri.indirim))
+    );
+    ozet.append(indirimSatir);
+  }
+
+  const toplamSatir = elemanOlustur("div", "fis-toplam");
+  toplamSatir.append(
+    elemanOlustur("strong", "", "Toplam"),
+    elemanOlustur("strong", "", paraBicimle(veri.toplam))
+  );
+  ozet.append(toplamSatir);
+
+  fisAlani.append(ozet, elemanOlustur("p", "fis-alt-not", "Teşekkür ederiz!"));
 }
 
 // tur: "basari", "hata" veya boş (mesajı temizler)
@@ -246,8 +315,20 @@ function sepetButonunaTiklandi(olay) {
   sepetiCiz();
 }
 
+function fisYazdirTiklandi(olay) {
+  const buton = olay.target.closest('button[data-islem="yazdir"]');
+  if (!buton) return;
+
+  const siparis = siparisler.find((s) => s.id === buton.dataset.id);
+  if (!siparis) return;
+
+  fisiCiz(siparis);
+  window.print();
+}
+
 menuAlani.addEventListener("click", sepetButonunaTiklandi);
 sepetListesi.addEventListener("click", sepetButonunaTiklandi);
+siparisListesi.addEventListener("click", fisYazdirTiklandi);
 kampanyaFormu.addEventListener("submit", kampanyaUygula);
 kampanyaKaldirButonu.addEventListener("click", () => {
   kampanyayiSifirla();

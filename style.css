@@ -104,6 +104,11 @@ body {
   border-color: var(--soluk);
 }
 
+.btn-kucuk {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
 .btn-adet {
   width: 32px;
   height: 32px;
@@ -400,4 +405,82 @@ body {
   padding: 16px 0;
   color: var(--soluk);
   text-align: center;
+}
+
+.siparis-alt {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Yazdırma fişi: ekranda gizli, yalnızca yazdırma önizlemesinde görünür. */
+
+.fis-alani {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .ust-bant,
+  .paneller {
+    display: none !important;
+  }
+
+  .fis-alani {
+    display: block;
+    width: 100%;
+    max-width: 80mm;
+    margin: 0 auto;
+    padding: 8px 0;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .fis-baslik {
+    margin: 0 0 8px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .fis-meta,
+  .fis-musteri {
+    padding: 6px 0;
+    border-top: 1px dashed #000;
+  }
+
+  .fis-kalemler {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    border-top: 1px dashed #000;
+    border-bottom: 1px dashed #000;
+  }
+
+  .fis-kalem,
+  .fis-satir,
+  .fis-toplam {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .fis-ozet {
+    padding: 6px 0;
+    border-bottom: 1px dashed #000;
+  }
+
+  .fis-toplam {
+    margin-top: 4px;
+    font-size: 13px;
+  }
+
+  .fis-alt-not {
+    margin: 8px 0 0;
+    text-align: center;
+  }
 }
