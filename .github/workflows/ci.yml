@@ -35,7 +35,7 @@ jobs:
             sleep 1
           done
           grep -q "Restoran Sipariş Kontrolü" sayfa.html
-          for dosya in style.css js/cart.js js/discount.js js/orders.js js/receipt.js js/app.js; do
+          for dosya in style.css menu.json js/cart.js js/discount.js js/orders.js js/receipt.js js/app.js; do
             curl -fsS -o /dev/null "http://localhost:8080/$dosya"
           done
 

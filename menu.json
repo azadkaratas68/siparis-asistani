@@ -1,0 +1,11 @@
+[
+  { "id": "p1", "ad": "Margarita Pizza", "kategori": "Pizza", "fiyat": 250 },
+  { "id": "p2", "ad": "Karışık Pizza", "kategori": "Pizza", "fiyat": 300 },
+  { "id": "p3", "ad": "Sucuklu Pizza", "kategori": "Pizza", "fiyat": 290 },
+  { "id": "b1", "ad": "Klasik Burger", "kategori": "Burger", "fiyat": 220 },
+  { "id": "b2", "ad": "Cheeseburger", "kategori": "Burger", "fiyat": 240 },
+  { "id": "m1", "ad": "Penne Arrabbiata", "kategori": "Makarna", "fiyat": 200 },
+  { "id": "t1", "ad": "Çıtır Tavuk (6 adet)", "kategori": "Tavuk", "fiyat": 180 },
+  { "id": "i1", "ad": "Ayran", "kategori": "İçecek", "fiyat": 30 },
+  { "id": "i2", "ad": "Kola (330 ml)", "kategori": "İçecek", "fiyat": 45 }
+]

@@ -1,10 +1,14 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const {
   MENU,
   urunBul,
   urunEkle,
   urunSil,
+  menuJsonOku,
+  menuFiyatlariniGuncelle,
   sepeteEkle,
   adetAzalt,
   sepettenUrunKaldir,
@@ -128,4 +132,39 @@ test("sepettenUrunKaldir ürünü sepetten tamamen kaldırır ve orijinal sepeti
 
   assert.deepEqual(sepet, { p1: 3, i1: 1 });
   assert.deepEqual(guncel, { i1: 1 });
+});
+
+test("menu.json dosyası geçerli menü verisi içerir ve menuJsonOku ile okunur", () => {
+  const dosyaYolu = path.join(__dirname, "..", "menu.json");
+  const icerik = fs.readFileSync(dosyaYolu, "utf8");
+  const jsonMenu = menuJsonOku(icerik);
+
+  assert.equal(jsonMenu.length, 9);
+  assert.equal(urunBul("p1", jsonMenu).ad, "Margarita Pizza");
+  assert.equal(urunBul("p1", jsonMenu).fiyat, 250);
+});
+
+test("menuJsonOku bozuk JSON veya eksik ürün tanımında hata verir", () => {
+  assert.throws(() => menuJsonOku("{bozuk"), { message: "Menü JSON biçimi geçersiz." });
+  assert.throws(() => menuJsonOku("[]"), { message: "Menü en az bir ürün içeren bir liste olmalıdır." });
+  assert.throws(() => menuJsonOku([{ id: "p1", ad: "Pizza", kategori: "Pizza", fiyat: -10 }]), {
+    message: "Menüde geçersiz ürün tanımı var.",
+  });
+});
+
+test("menuFiyatlariniGuncelle menu.json fiyat değişikliğini mevcut menüye yansıtır", () => {
+  const mevcut = [
+    { id: "p1", ad: "Margarita Pizza", kategori: "Pizza", fiyat: 250 },
+    { id: "u-ozel", ad: "Izgara Köfte", kategori: "Ana Yemek", fiyat: 280 },
+  ];
+  const jsonMenu = [
+    { id: "p1", ad: "Margarita Pizza", kategori: "Pizza", fiyat: 275 },
+    { id: "i1", ad: "Ayran", kategori: "İçecek", fiyat: 35 },
+  ];
+
+  const guncel = menuFiyatlariniGuncelle(mevcut, jsonMenu);
+  assert.deepEqual(guncel, [
+    { id: "p1", ad: "Margarita Pizza", kategori: "Pizza", fiyat: 275 },
+    { id: "u-ozel", ad: "Izgara Köfte", kategori: "Ana Yemek", fiyat: 280 },
+  ]);
 });

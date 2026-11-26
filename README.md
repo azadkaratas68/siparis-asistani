@@ -42,7 +42,7 @@ Pano "Yapılacak / Devam Ediyor / Tamamlandı" sütunlarından oluşur. Her gör
 | [#3](https://github.com/azadkaratas68/siparis-asistani/issues/3) | İndirim / kampanya kodu | ✅ Tamamlandı |
 | [#4](https://github.com/azadkaratas68/siparis-asistani/issues/4) | Sipariş fişi yazdırma | ✅ Tamamlandı |
 | [#5](https://github.com/azadkaratas68/siparis-asistani/issues/5) | GitHub Actions ile otomatik test (CI) | ✅ Tamamlandı |
-| [#6](https://github.com/azadkaratas68/siparis-asistani/issues/6) | Menüyü JSON dosyasından okuma | Yapılacak |
+| [#6](https://github.com/azadkaratas68/siparis-asistani/issues/6) | Menüyü JSON dosyasından okuma | ✅ Tamamlandı |
 | [#7](https://github.com/azadkaratas68/siparis-asistani/issues/7) | Docker ile çalıştırma | ✅ Tamamlandı |
 | [#8](https://github.com/azadkaratas68/siparis-asistani/issues/8) | Restoran sipariş kontrolü ve dinamik menü yönetimi | ✅ Tamamlandı |
 
@@ -94,7 +94,7 @@ Testler için **Node.js 18 veya üstü** gerekir. Ek paket kurulmaz, Node'un dah
 npm test
 ```
 
-Beklenen çıktı: 38 testin tamamı geçer (`pass 38`, `fail 0`).
+Beklenen çıktı: 41 testin tamamı geçer (`pass 41`, `fail 0`).
 
 ## Özellikleri deneme
 
@@ -133,6 +133,12 @@ Beklenen çıktı: 38 testin tamamı geçer (`pass 38`, `fail 0`).
 2. "Bugünkü siparişler" listesindeki sipariş kartında **Fiş yazdır** butonuna basın.
 3. Tarayıcının yazdırma önizlemesi açılır; yalnızca fiş görünür ve fişte dükkân başlığı, sipariş/müşteri bilgileri, ürünler, adetler, varsa indirim ve genel toplam yer alır.
 
+### #6 – Menüyü JSON dosyasından okuma
+
+1. Uygulamayı bir sunucu üzerinden açın (ör. `docker compose up --build -d` → `http://localhost:8080`).
+2. `menu.json` içinde herhangi bir ürünün fiyatını değiştirin (ör. `Margarita Pizza`: `250` → `275`).
+3. Docker kullanıyorsanız imajı yeniden derleyin (`docker compose up --build -d`) ve sayfayı yenileyin; menüde yeni fiyat görünür. (`index.html` doğrudan `file://` ile açılırsa tarayıcı CORS kısıtı nedeniyle yerleşik varsayılan menü yedek olarak kullanılır.)
+
 ### #8 – Restoran sipariş kontrolü ve dinamik menü yönetimi
 
 1. Menü panelinin sağ üstündeki **Menüyü düzenle** butonuna basın.
@@ -148,6 +154,7 @@ Beklenen çıktı: 38 testin tamamı geçer (`pass 38`, `fail 0`).
 siparis-asistani/
 ├── index.html          Arayüz: Menü | Sepet + müşteri formu | Bugünkü siparişler
 ├── style.css           Stiller
+├── menu.json           Dışarıdan düzenlenebilir menü verisi
 ├── package.json        Sadece "test" script'i, bağımlılık yok
 ├── Dockerfile          Test + nginx ile sunum (iki aşamalı)
 ├── compose.yaml        docker compose ile tek komutla çalıştırma

@@ -5,6 +5,7 @@
 const SIPARIS_ANAHTARI = "siparis_asistani_siparisler";
 const MENU_ANAHTARI = "siparis_asistani_menu";
 
+let varsayilanMenu = MENU.map((urun) => ({ ...urun }));
 let menu = menuyuOku();
 let menuDuzenlemeAcik = false;
 let sepet = {};
@@ -40,15 +41,15 @@ const fisAlani = document.getElementById("fis-alani");
 // --- localStorage ---
 
 function varsayilanMenuKopyasi() {
-  return MENU.map((urun) => ({ ...urun }));
+  return varsayilanMenu.map((urun) => ({ ...urun }));
 }
 
-function menuyuOku() {
+function kayitliMenuOku() {
   try {
     const ham = localStorage.getItem(MENU_ANAHTARI);
-    if (ham === null) return varsayilanMenuKopyasi();
+    if (ham === null) return null;
     const kayit = JSON.parse(ham);
-    if (!Array.isArray(kayit)) return varsayilanMenuKopyasi();
+    if (!Array.isArray(kayit)) return null;
     return kayit.filter(
       (u) =>
         u &&
@@ -59,7 +60,34 @@ function menuyuOku() {
         u.fiyat > 0
     );
   } catch (hata) {
-    return varsayilanMenuKopyasi();
+    return null;
+  }
+}
+
+function menuyuOku() {
+  const kayitli = kayitliMenuOku();
+  return kayitli === null ? varsayilanMenuKopyasi() : kayitli;
+}
+
+async function menuyuJsonDanYukle() {
+  if (typeof fetch !== "function") return;
+  try {
+    const yanit = await fetch("menu.json", { cache: "no-store" });
+    if (!yanit.ok) return;
+    const jsonMenu = menuJsonOku(await yanit.json());
+    varsayilanMenu = jsonMenu;
+
+    const kayitli = kayitliMenuOku();
+    if (kayitli === null) {
+      menu = varsayilanMenuKopyasi();
+    } else {
+      menu = menuFiyatlariniGuncelle(kayitli, jsonMenu);
+      menuyuYaz(menu);
+    }
+    menuyuCiz();
+    sepetiCiz();
+  } catch (hata) {
+    // file:// altında CORS kısıtı veya ağ hatası olursa yerleşik varsayılan menü kullanılır.
   }
 }
 
@@ -483,3 +511,4 @@ siparisFormu.addEventListener("submit", siparisiKaydet);
 menuyuCiz();
 sepetiCiz();
 siparisleriCiz();
+menuyuJsonDanYukle();

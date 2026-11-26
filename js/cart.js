@@ -62,6 +62,48 @@ function urunSil(menu, urunId) {
   return menu.filter((urun) => urun.id !== urunId);
 }
 
+// JSON metninden veya diziden geçerli menü listesi üretir.
+function menuJsonOku(girdi) {
+  let veri = girdi;
+  if (typeof girdi === "string") {
+    try {
+      veri = JSON.parse(girdi);
+    } catch (hata) {
+      throw new Error("Menü JSON biçimi geçersiz.");
+    }
+  }
+  if (!Array.isArray(veri) || veri.length === 0) {
+    throw new Error("Menü en az bir ürün içeren bir liste olmalıdır.");
+  }
+
+  return veri.map((oge) => {
+    const id = String((oge && oge.id) || "").trim();
+    const ad = String((oge && oge.ad) || "").trim();
+    const kategori = String((oge && oge.kategori) || "").trim();
+    const fiyat = Number(oge && oge.fiyat);
+
+    if (!id || !ad || !kategori || !Number.isFinite(fiyat) || fiyat <= 0) {
+      throw new Error("Menüde geçersiz ürün tanımı var.");
+    }
+    return {
+      id: id,
+      ad: ad,
+      kategori: kategori,
+      fiyat: Math.round(fiyat * 100) / 100,
+    };
+  });
+}
+
+// Kayıtlı menüdeki ortak ürünlerin fiyat/bilgilerini güncel menu.json verisiyle eşitler.
+// Kullanıcının eklediği özel ürünler korunur, sildiği ürünler geri getirilmez.
+function menuFiyatlariniGuncelle(mevcutMenu, jsonMenu) {
+  const jsonHaritasi = new Map(jsonMenu.map((urun) => [urun.id, urun]));
+  return mevcutMenu.map((urun) => {
+    const guncel = jsonHaritasi.get(urun.id);
+    return guncel ? { ...guncel } : { ...urun };
+  });
+}
+
 function sepettenUrunKaldir(sepet, urunId) {
   const yeniSepet = { ...sepet };
   delete yeniSepet[urunId];
@@ -124,6 +166,8 @@ if (typeof module !== "undefined") {
     urunBul,
     urunEkle,
     urunSil,
+    menuJsonOku,
+    menuFiyatlariniGuncelle,
     sepeteEkle,
     adetAzalt,
     sepettenUrunKaldir,
