@@ -15,7 +15,7 @@ test("fisVerisiHazirla normal siparişte ürünler, adetler ve toplamı hazırla
   const siparis = siparisOlustur({ p1: 2, i1: 1 }, ornekMusteri, tarih);
   const fis = fisVerisiHazirla(siparis);
 
-  assert.equal(fis.baslik, "Pizza Dükkânı Sipariş Asistanı");
+  assert.equal(fis.baslik, "Restoran Sipariş Kontrolü");
   assert.equal(fis.siparisId, siparis.id);
   assert.equal(fis.tarih, "26.11.2026 14:15");
   assert.deepEqual(fis.musteri, {

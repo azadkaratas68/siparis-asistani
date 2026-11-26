@@ -3,6 +3,7 @@
 
 const KAMPANYALAR = {
   PIZZA10: { oran: 10 },
+  INDIRIM10: { oran: 10 },
 };
 
 // Boşluklar ve büyük/küçük harf fark etmez. Türkçe klavyede Caps Lock açıkken

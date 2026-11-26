@@ -1,7 +1,7 @@
 {
   "name": "siparis-asistani",
   "version": "1.0.0",
-  "description": "Pizza dükkânı için tek ekranlık sipariş asistanı",
+  "description": "Restoranlar için tek ekranlık sipariş kontrol ve takip asistanı",
   "private": true,
   "scripts": {
     "test": "node --test"

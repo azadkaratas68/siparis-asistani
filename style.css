@@ -70,6 +70,18 @@ body {
   font-size: 1.15rem;
 }
 
+.panel-baslik {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.panel-baslik h2 {
+  margin: 0;
+}
+
 /* Butonlar */
 
 .btn {
@@ -109,6 +121,17 @@ body {
   font-size: 0.85rem;
 }
 
+.btn-sil {
+  background: #fff;
+  border-color: #f0c6c6;
+  color: var(--hata);
+}
+
+.btn-sil:hover {
+  background: #fdecec;
+  border-color: var(--hata);
+}
+
 .btn-adet {
   width: 32px;
   height: 32px;
@@ -123,6 +146,72 @@ body {
 }
 
 /* Menü */
+
+.menu-yonetimi {
+  background: var(--zemin);
+  border: 1px solid var(--cizgi);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.urun-ekle-formu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.urun-ekle-formu h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.urun-ekle-formu label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--soluk);
+}
+
+.urun-ekle-formu input {
+  font: inherit;
+  color: var(--metin);
+  background: #fff;
+  padding: 6px 10px;
+  border: 1px solid var(--cizgi);
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.urun-ekle-formu input:focus {
+  outline: 2px solid var(--vurgu);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.urun-form-ikili {
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 8px;
+}
+
+.urun-form-butonlar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.urun-ekle-formu .form-mesaji:empty {
+  display: none;
+}
+
+.urun-islem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 .kategori + .kategori {
   margin-top: 14px;

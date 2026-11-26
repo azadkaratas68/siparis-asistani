@@ -20,6 +20,54 @@ function urunBul(urunId, menu = MENU) {
   return menu.find((urun) => urun.id === urunId);
 }
 
+// yeniUrun: { ad, kategori, fiyat, id? }
+// Orijinal menüyü değiştirmez, yeni menü dizisi döndürür.
+function urunEkle(menu, yeniUrun) {
+  const veri = yeniUrun || {};
+  const ad = String(veri.ad || "").trim();
+  if (!ad) {
+    throw new Error("Ürün adı zorunludur.");
+  }
+
+  const kategori = String(veri.kategori || "").trim();
+  if (!kategori) {
+    throw new Error("Kategori zorunludur.");
+  }
+
+  const hamFiyat = typeof veri.fiyat === "string" ? veri.fiyat.replace(",", ".") : veri.fiyat;
+  const fiyat = Number(hamFiyat);
+  if (!Number.isFinite(fiyat) || fiyat <= 0) {
+    throw new Error("Fiyat 0'dan büyük bir sayı olmalıdır.");
+  }
+
+  let id = String(veri.id || "").trim();
+  if (!id || menu.some((urun) => urun.id === id)) {
+    do {
+      id = "u-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+    } while (menu.some((urun) => urun.id === id));
+  }
+
+  return [
+    ...menu,
+    {
+      id: id,
+      ad: ad,
+      kategori: kategori,
+      fiyat: Math.round(fiyat * 100) / 100,
+    },
+  ];
+}
+
+function urunSil(menu, urunId) {
+  return menu.filter((urun) => urun.id !== urunId);
+}
+
+function sepettenUrunKaldir(sepet, urunId) {
+  const yeniSepet = { ...sepet };
+  delete yeniSepet[urunId];
+  return yeniSepet;
+}
+
 function sepeteEkle(sepet, urunId, menu = MENU) {
   if (!urunBul(urunId, menu)) {
     throw new Error("Menüde böyle bir ürün yok: " + urunId);
@@ -74,8 +122,11 @@ if (typeof module !== "undefined") {
   module.exports = {
     MENU,
     urunBul,
+    urunEkle,
+    urunSil,
     sepeteEkle,
     adetAzalt,
+    sepettenUrunKaldir,
     sepetKalemleri,
     sepetToplami,
     sepetBosMu,

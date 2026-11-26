@@ -48,7 +48,7 @@ function fisVerisiHazirla(siparis) {
 
   const hamMusteri = siparis.musteri || {};
   return {
-    baslik: "Pizza Dükkânı Sipariş Asistanı",
+    baslik: "Restoran Sipariş Kontrolü",
     siparisId: String(siparis.id || ""),
     tarih: fisTarihBicimle(siparis.tarih),
     musteri: {

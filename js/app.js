@@ -3,12 +3,21 @@
 // Hesaplama ve doğrulama cart.js, discount.js ve orders.js içindeki saf fonksiyonlarda yapılır.
 
 const SIPARIS_ANAHTARI = "siparis_asistani_siparisler";
+const MENU_ANAHTARI = "siparis_asistani_menu";
 
+let menu = menuyuOku();
+let menuDuzenlemeAcik = false;
 let sepet = {};
 let kampanyaKodu = ""; // Uygulanmış geçerli kod; yoksa boş.
 let siparisler = siparisleriOku();
 
 const menuAlani = document.getElementById("menu");
+const menuDuzenleButonu = document.getElementById("menu-duzenle-btn");
+const menuYonetimi = document.getElementById("menu-yonetimi");
+const urunEkleFormu = document.getElementById("urun-ekle-formu");
+const kategoriOnerileri = document.getElementById("kategori-onerileri");
+const varsayilanMenuButonu = document.getElementById("varsayilan-menu-btn");
+const menuMesaji = document.getElementById("menu-mesaji");
 const sepetListesi = document.getElementById("sepet-listesi");
 const araToplamSatiri = document.getElementById("ara-toplam-satiri");
 const araToplamAlani = document.getElementById("ara-toplam");
@@ -29,6 +38,39 @@ const siparisListesi = document.getElementById("siparis-listesi");
 const fisAlani = document.getElementById("fis-alani");
 
 // --- localStorage ---
+
+function varsayilanMenuKopyasi() {
+  return MENU.map((urun) => ({ ...urun }));
+}
+
+function menuyuOku() {
+  try {
+    const ham = localStorage.getItem(MENU_ANAHTARI);
+    if (ham === null) return varsayilanMenuKopyasi();
+    const kayit = JSON.parse(ham);
+    if (!Array.isArray(kayit)) return varsayilanMenuKopyasi();
+    return kayit.filter(
+      (u) =>
+        u &&
+        typeof u.id === "string" &&
+        typeof u.ad === "string" &&
+        typeof u.kategori === "string" &&
+        Number.isFinite(u.fiyat) &&
+        u.fiyat > 0
+    );
+  } catch (hata) {
+    return varsayilanMenuKopyasi();
+  }
+}
+
+function menuyuYaz(liste) {
+  try {
+    localStorage.setItem(MENU_ANAHTARI, JSON.stringify(liste));
+    return true;
+  } catch (hata) {
+    return false;
+  }
+}
 
 function siparisleriOku() {
   try {
@@ -68,19 +110,43 @@ function butonOlustur(metin, sinif, veri, etiket) {
 
 function menuyuCiz() {
   menuAlani.replaceChildren();
-  const kategoriler = [...new Set(MENU.map((urun) => urun.kategori))];
+  const kategoriler = [...new Set(menu.map((urun) => urun.kategori))];
+
+  if (kategoriOnerileri) {
+    kategoriOnerileri.replaceChildren();
+    for (const kategori of kategoriler) {
+      const secenek = document.createElement("option");
+      secenek.value = kategori;
+      kategoriOnerileri.append(secenek);
+    }
+  }
+
+  if (menu.length === 0) {
+    menuAlani.append(elemanOlustur("p", "liste-bos", "Menüde ürün yok. Yeni ürün ekleyin."));
+    return;
+  }
 
   for (const kategori of kategoriler) {
     const bolum = elemanOlustur("section", "kategori");
     bolum.append(elemanOlustur("h3", "kategori-baslik", kategori));
 
     const liste = elemanOlustur("ul", "urun-listesi");
-    for (const urun of MENU.filter((u) => u.kategori === kategori)) {
+    for (const urun of menu.filter((u) => u.kategori === kategori)) {
+      const islemKutusu = elemanOlustur("div", "urun-islem");
+      islemKutusu.append(
+        butonOlustur("Ekle", "btn btn-ekle", { islem: "ekle", id: urun.id }, urun.ad + " ekle")
+      );
+      if (menuDuzenlemeAcik) {
+        islemKutusu.append(
+          butonOlustur("Sil", "btn btn-sil btn-kucuk", { islem: "sil", id: urun.id }, urun.ad + " ürününü sil")
+        );
+      }
+
       const satir = elemanOlustur("li", "urun");
       satir.append(
         elemanOlustur("span", "urun-ad", urun.ad),
         elemanOlustur("span", "urun-fiyat", paraBicimle(urun.fiyat)),
-        butonOlustur("Ekle", "btn btn-ekle", { islem: "ekle", id: urun.id }, urun.ad + " ekle")
+        islemKutusu
       );
       liste.append(satir);
     }
@@ -95,7 +161,7 @@ function sepetiCiz() {
   if (sepetBosMu(sepet)) {
     sepetListesi.append(elemanOlustur("li", "sepet-bos", "Sepet boş. Menüden ürün ekleyin."));
   } else {
-    for (const kalem of sepetKalemleri(sepet)) {
+    for (const kalem of sepetKalemleri(sepet, menu)) {
       const adetKutusu = elemanOlustur("div", "adet-kutusu");
       adetKutusu.append(
         butonOlustur("−", "btn btn-adet", { islem: "azalt", id: kalem.id }, kalem.ad + " adedini azalt"),
@@ -113,7 +179,7 @@ function sepetiCiz() {
     }
   }
 
-  const araToplam = sepetToplami(sepet);
+  const araToplam = sepetToplami(sepet, menu);
   const kampanya = kampanyaKodu ? indirimHesapla(araToplam, kampanyaKodu) : null;
 
   araToplamSatiri.hidden = !kampanya;
@@ -253,7 +319,7 @@ function mesajGoster(eleman, metin, tur) {
 function kampanyaUygula(olay) {
   olay.preventDefault();
   try {
-    const sonuc = indirimHesapla(sepetToplami(sepet), kampanyaKutusu.value);
+    const sonuc = indirimHesapla(sepetToplami(sepet, menu), kampanyaKutusu.value);
     kampanyaKodu = sonuc.kod;
     kampanyaKutusu.value = sonuc.kod;
     mesajGoster(kampanyaMesaji, sonuc.kod + " uygulandı: %" + sonuc.oran + " indirim.", "basari");
@@ -281,7 +347,7 @@ function siparisiKaydet(olay) {
 
   let siparis;
   try {
-    siparis = siparisOlustur(sepet, musteri, new Date(), MENU, kampanyaKodu);
+    siparis = siparisOlustur(sepet, musteri, new Date(), menu, kampanyaKodu);
   } catch (hata) {
     mesajGoster(formMesaji, hata.message, "hata");
     return;
@@ -302,17 +368,87 @@ function siparisiKaydet(olay) {
   mesajGoster(formMesaji, "Sipariş kaydedildi: " + paraBicimle(siparis.toplam), "basari");
 }
 
-// Menüdeki "Ekle" ve sepetteki −/+ butonları aynı işleyiciyi kullanır.
+function menuDuzenlemeDegistir() {
+  menuDuzenlemeAcik = !menuDuzenlemeAcik;
+  menuYonetimi.hidden = !menuDuzenlemeAcik;
+  menuDuzenleButonu.textContent = menuDuzenlemeAcik ? "Düzenlemeyi kapat" : "Menüyü düzenle";
+  menuDuzenleButonu.setAttribute("aria-expanded", String(menuDuzenlemeAcik));
+  mesajGoster(menuMesaji, "");
+  menuyuCiz();
+}
+
+function urunEkleGonderildi(olay) {
+  olay.preventDefault();
+  const veri = new FormData(urunEkleFormu);
+  const yeniUrun = {
+    ad: veri.get("ad"),
+    kategori: veri.get("kategori"),
+    fiyat: veri.get("fiyat"),
+  };
+
+  let yeniMenu;
+  try {
+    yeniMenu = urunEkle(menu, yeniUrun);
+  } catch (hata) {
+    mesajGoster(menuMesaji, hata.message, "hata");
+    return;
+  }
+
+  if (!menuyuYaz(yeniMenu)) {
+    mesajGoster(menuMesaji, "Ürün eklenemedi: tarayıcı depolamasına yazılamıyor.", "hata");
+    return;
+  }
+
+  const eklenen = yeniMenu[yeniMenu.length - 1];
+  menu = yeniMenu;
+  urunEkleFormu.reset();
+  menuyuCiz();
+  mesajGoster(menuMesaji, eklenen.ad + " menüye eklendi.", "basari");
+}
+
+function varsayilanMenuyuYukle() {
+  const varsayilan = varsayilanMenuKopyasi();
+  if (!menuyuYaz(varsayilan)) {
+    mesajGoster(menuMesaji, "Varsayılan menü yüklenemedi.", "hata");
+    return;
+  }
+  menu = varsayilan;
+  for (const urunId of Object.keys(sepet)) {
+    if (!urunBul(urunId, menu)) {
+      sepet = sepettenUrunKaldir(sepet, urunId);
+    }
+  }
+  menuyuCiz();
+  sepetiCiz();
+  mesajGoster(menuMesaji, "Varsayılan örnek menü yüklendi.", "basari");
+}
+
+// Menüdeki "Ekle"/"Sil" ve sepetteki −/+ butonları bu işleyiciyi kullanır.
 function sepetButonunaTiklandi(olay) {
   const buton = olay.target.closest("button[data-islem]");
   if (!buton) return;
 
   if (buton.dataset.islem === "ekle") {
-    sepet = sepeteEkle(sepet, buton.dataset.id);
+    sepet = sepeteEkle(sepet, buton.dataset.id, menu);
+    sepetiCiz();
   } else if (buton.dataset.islem === "azalt") {
     sepet = adetAzalt(sepet, buton.dataset.id);
+    sepetiCiz();
+  } else if (buton.dataset.islem === "sil") {
+    const silinen = urunBul(buton.dataset.id, menu);
+    const yeniMenu = urunSil(menu, buton.dataset.id);
+    if (!menuyuYaz(yeniMenu)) {
+      mesajGoster(menuMesaji, "Ürün silinemedi: tarayıcı depolamasına yazılamıyor.", "hata");
+      return;
+    }
+    menu = yeniMenu;
+    sepet = sepettenUrunKaldir(sepet, buton.dataset.id);
+    menuyuCiz();
+    sepetiCiz();
+    if (silinen) {
+      mesajGoster(menuMesaji, silinen.ad + " menüden silindi.", "basari");
+    }
   }
-  sepetiCiz();
 }
 
 function fisYazdirTiklandi(olay) {
@@ -326,6 +462,9 @@ function fisYazdirTiklandi(olay) {
   window.print();
 }
 
+menuDuzenleButonu.addEventListener("click", menuDuzenlemeDegistir);
+urunEkleFormu.addEventListener("submit", urunEkleGonderildi);
+varsayilanMenuButonu.addEventListener("click", varsayilanMenuyuYukle);
 menuAlani.addEventListener("click", sepetButonunaTiklandi);
 sepetListesi.addEventListener("click", sepetButonunaTiklandi);
 siparisListesi.addEventListener("click", fisYazdirTiklandi);

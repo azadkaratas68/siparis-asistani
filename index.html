@@ -3,17 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sipariş Asistanı</title>
+  <title>Restoran Sipariş Kontrolü</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="ust-bant">
-    <h1>Pizza Dükkânı Sipariş Asistanı</h1>
+    <h1>Restoran Sipariş Kontrolü</h1>
   </header>
 
   <main class="paneller">
     <section class="panel" aria-labelledby="menu-baslik">
-      <h2 id="menu-baslik">Menü</h2>
+      <div class="panel-baslik">
+        <h2 id="menu-baslik">Menü</h2>
+        <button type="button" id="menu-duzenle-btn" class="btn btn-ikincil btn-kucuk" aria-expanded="false">Menüyü düzenle</button>
+      </div>
+
+      <div id="menu-yonetimi" class="menu-yonetimi" hidden>
+        <form id="urun-ekle-formu" class="urun-ekle-formu" novalidate>
+          <h3>Yeni ürün ekle</h3>
+          <label>
+            <span>Ürün adı <span class="zorunlu" aria-hidden="true">*</span></span>
+            <input type="text" name="ad" autocomplete="off" placeholder="Örn. Izgara Köfte" required>
+          </label>
+          <div class="urun-form-ikili">
+            <label>
+              <span>Kategori <span class="zorunlu" aria-hidden="true">*</span></span>
+              <input type="text" name="kategori" list="kategori-onerileri" autocomplete="off" placeholder="Örn. Ana Yemek" required>
+              <datalist id="kategori-onerileri"></datalist>
+            </label>
+            <label>
+              <span>Fiyat (₺) <span class="zorunlu" aria-hidden="true">*</span></span>
+              <input type="number" name="fiyat" min="1" step="0.5" placeholder="250" required>
+            </label>
+          </div>
+          <div class="urun-form-butonlar">
+            <button type="submit" class="btn btn-ana">Ürün ekle</button>
+            <button type="button" id="varsayilan-menu-btn" class="btn btn-ikincil btn-kucuk">Varsayılan menüyü yükle</button>
+          </div>
+          <p id="menu-mesaji" class="form-mesaji" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
       <div id="menu"></div>
     </section>
 

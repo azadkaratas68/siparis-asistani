@@ -1,32 +1,33 @@
-# Pizza Dükkânı Sipariş Asistanı
+# Restoran Sipariş Kontrolü
 
 [![CI](https://github.com/azadkaratas68/siparis-asistani/actions/workflows/ci.yml/badge.svg)](https://github.com/azadkaratas68/siparis-asistani/actions/workflows/ci.yml)
 
 > MTH001 – Güncel Yazılım Geliştirme Süreçleri ve DevOps dersi bireysel projesi.
 
-Pizza dükkânında sipariş alan çalışanlar için tarayıcıda açılan, tek ekranlık bir sipariş asistanı. Kurulum veya sunucu gerekmez.
+Restoranlarda sipariş alan çalışanlar için tarayıcıda açılan, tek ekranlık bir sipariş kontrol ve takip uygulaması. Kurulum veya sunucu gerekmez.
 
 ## Problem
 
-Küçük bir pizza dükkânında telefonla ya da tezgâhta gelen siparişler kâğıda yazılıyor ve tutar elle toplanıyor. Bunun sonucunda:
+Küçük bir restoranda telefonla ya da tezgâhta gelen siparişler kâğıda yazılıyor ve tutar elle toplanıyor. Bunun sonucunda:
 
 - hesap hataları oluyor,
 - sipariş notları (ör. "acısız olsun", "zil çalışmıyor") kayboluyor,
+- menüdeki ürün veya fiyat değişiklikleri hızla güncellenemiyor,
 - gün sonunda kaç sipariş alındığı ve ne kadar ciro yapıldığı bilinmiyor.
 
 ## Hedef kullanıcı
 
-Pizza dükkânında sipariş alan **kasiyer ve çalışanlar**.
+Restoran ve kafelerde sipariş alan **kasiyer ve çalışanlar**.
 
 ## Çözüm
 
 Çalışan tek bir ekranda:
 
-1. menüden ürün seçip sepete ekler, tutar otomatik hesaplanır;
-2. müşteri bilgileri ve sipariş notuyla siparişi kaydeder;
+1. menüden ürün seçip sepete ekler (isterse menüye yeni ürün ekler veya mevcut ürünleri siler), tutar otomatik hesaplanır;
+2. müşteri bilgileri ve sipariş notuyla siparişi kaydeder, gerekirse fiş yazdırır;
 3. günün siparişlerini, sipariş sayısını ve cirosunu görür.
 
-Uygulama saf HTML, CSS ve JavaScript ile yazıldı. Siparişler tarayıcının `localStorage` alanında saklanır, bu yüzden sayfa yenilense de kaybolmaz.
+Uygulama saf HTML, CSS ve JavaScript ile yazıldı. Siparişler ve menü değişiklikleri tarayıcının `localStorage` alanında saklanır, bu yüzden sayfa yenilense de kaybolmaz.
 
 ## Proje panosu
 
@@ -43,6 +44,7 @@ Pano "Yapılacak / Devam Ediyor / Tamamlandı" sütunlarından oluşur. Her gör
 | [#5](https://github.com/azadkaratas68/siparis-asistani/issues/5) | GitHub Actions ile otomatik test (CI) | ✅ Tamamlandı |
 | [#6](https://github.com/azadkaratas68/siparis-asistani/issues/6) | Menüyü JSON dosyasından okuma | Yapılacak |
 | [#7](https://github.com/azadkaratas68/siparis-asistani/issues/7) | Docker ile çalıştırma | ✅ Tamamlandı |
+| [#8](https://github.com/azadkaratas68/siparis-asistani/issues/8) | Restoran sipariş kontrolü ve dinamik menü yönetimi | ✅ Tamamlandı |
 
 Geliştirilen iki görevin her biri ayrı bir commit'tir ve commit mesajındaki `(#1)` / `(#2)` ile ilgili issue'ya bağlıdır.
 
@@ -92,7 +94,7 @@ Testler için **Node.js 18 veya üstü** gerekir. Ek paket kurulmaz, Node'un dah
 npm test
 ```
 
-Beklenen çıktı: 33 testin tamamı geçer (`pass 33`, `fail 0`).
+Beklenen çıktı: 38 testin tamamı geçer (`pass 38`, `fail 0`).
 
 ## Özellikleri deneme
 
@@ -130,6 +132,15 @@ Beklenen çıktı: 33 testin tamamı geçer (`pass 33`, `fail 0`).
 1. Bir sipariş kaydedin (ör. 2 × Margarita + 1 × Ayran = 530 ₺, isteğe bağlı `PIZZA10` ile 477 ₺).
 2. "Bugünkü siparişler" listesindeki sipariş kartında **Fiş yazdır** butonuna basın.
 3. Tarayıcının yazdırma önizlemesi açılır; yalnızca fiş görünür ve fişte dükkân başlığı, sipariş/müşteri bilgileri, ürünler, adetler, varsa indirim ve genel toplam yer alır.
+
+### #8 – Restoran sipariş kontrolü ve dinamik menü yönetimi
+
+1. Menü panelinin sağ üstündeki **Menüyü düzenle** butonuna basın.
+2. **Yeni ürün ekle** formuna bir ürün girin (ör. Ad: `Izgara Köfte`, Kategori: `Ana Yemek`, Fiyat: `280`) ve **Ürün ekle**'ye basın. Ürün yeni kategorisiyle birlikte menüye eklenir.
+3. Herhangi bir ürünün yanındaki **Sil** butonuna basın. Ürün menüden (ve varsa aktif sepetten) kaldırılır; daha önce kaydedilmiş siparişler etkilenmez.
+4. Sayfayı yenileyin (F5). Eklediğiniz ve sildiğiniz ürünler `localStorage` sayesinde korunur.
+5. **Varsayılan menüyü yükle** butonuna basarak başlangıçtaki örnek menüye (pizzalar, burgerler, makarna, tavuk, içecekler) geri dönebilirsiniz.
+6. Kampanya kodu alanında `PIZZA10` yanında `INDIRIM10` kodu da `%10` indirim uygular.
 
 ## Proje yapısı
 

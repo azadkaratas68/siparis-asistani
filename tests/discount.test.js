@@ -31,6 +31,13 @@ test("boş sepette indirim 0 olur", () => {
   assert.equal(sonuc.toplam, 0);
 });
 
+test("INDIRIM10 restoran genelinde %10 indirim uygular", () => {
+  const sonuc = indirimHesapla(400, "indirim10");
+  assert.equal(sonuc.kod, "INDIRIM10");
+  assert.equal(sonuc.indirim, 40);
+  assert.equal(sonuc.toplam, 360);
+});
+
 test("geçersiz kod hata verir", () => {
   for (const kod of ["PIZZA20", "INDIRIM", "constructor", "__proto__"]) {
     assert.throws(() => indirimHesapla(530, kod), { message: "Geçersiz kampanya kodu." }, kod);

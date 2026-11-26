@@ -3,8 +3,11 @@ const assert = require("node:assert/strict");
 const {
   MENU,
   urunBul,
+  urunEkle,
+  urunSil,
   sepeteEkle,
   adetAzalt,
+  sepettenUrunKaldir,
   sepetKalemleri,
   sepetToplami,
   sepetBosMu,
@@ -79,4 +82,50 @@ test("fonksiyonlar orijinal sepeti değiştirmez", () => {
 test("paraBicimle Türkçe biçimde ₺ ekler", () => {
   assert.equal(paraBicimle(530), "530 ₺");
   assert.equal(paraBicimle(1250), "1.250 ₺");
+});
+
+test("urunEkle yeni ürünü menüye ekler ve orijinal menüyü değiştirmez", () => {
+  const baslangic = [{ id: "p1", ad: "Margarita Pizza", kategori: "Pizza", fiyat: 250 }];
+  const guncel = urunEkle(baslangic, { ad: "  Izgara Köfte  ", kategori: " Ana Yemek ", fiyat: "280,5" });
+
+  assert.equal(baslangic.length, 1);
+  assert.equal(guncel.length, 2);
+  assert.equal(guncel[1].ad, "Izgara Köfte");
+  assert.equal(guncel[1].kategori, "Ana Yemek");
+  assert.equal(guncel[1].fiyat, 280.5);
+  assert.ok(guncel[1].id);
+  assert.notEqual(guncel[1].id, "p1");
+});
+
+test("urunEkle boş ad, boş kategori veya geçersiz fiyatta hata verir", () => {
+  assert.throws(() => urunEkle(MENU, { ad: "   ", kategori: "Ana Yemek", fiyat: 200 }), {
+    message: "Ürün adı zorunludur.",
+  });
+  assert.throws(() => urunEkle(MENU, { ad: "Izgara Köfte", kategori: "", fiyat: 200 }), {
+    message: "Kategori zorunludur.",
+  });
+  for (const fiyat of [0, -50, "", "abc", NaN]) {
+    assert.throws(() => urunEkle(MENU, { ad: "Izgara Köfte", kategori: "Ana Yemek", fiyat }), {
+      message: "Fiyat 0'dan büyük bir sayı olmalıdır.",
+    });
+  }
+});
+
+test("urunSil ürünü menüden kaldırır, orijinal menüyü değiştirmez", () => {
+  const baslangic = [
+    { id: "p1", ad: "Margarita Pizza", kategori: "Pizza", fiyat: 250 },
+    { id: "i1", ad: "Ayran", kategori: "İçecek", fiyat: 30 },
+  ];
+  const kalan = urunSil(baslangic, "p1");
+
+  assert.equal(baslangic.length, 2);
+  assert.deepEqual(kalan, [{ id: "i1", ad: "Ayran", kategori: "İçecek", fiyat: 30 }]);
+});
+
+test("sepettenUrunKaldir ürünü sepetten tamamen kaldırır ve orijinal sepeti değiştirmez", () => {
+  const sepet = { p1: 3, i1: 1 };
+  const guncel = sepettenUrunKaldir(sepet, "p1");
+
+  assert.deepEqual(sepet, { p1: 3, i1: 1 });
+  assert.deepEqual(guncel, { i1: 1 });
 });
